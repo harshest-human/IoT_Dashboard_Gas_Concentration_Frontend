@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive AgroTech Cloud - Researcher Data & Diagnostics Portal</title>
+  
+  <!-- Inter Font & Chart.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <!-- Top Global Header (LI-COR HOBO Inspired) -->
+  <header class="top-nav">
+    <div class="brand-section">
+      <div class="brand-badge">AGROTECH</div>
+      <div>
+        <div class="brand-title">
+          <span>Adaptive AgroTech Cloud</span>
+          <span style="font-size:0.75rem; background:#0284c7; padding:2px 6px; border-radius:4px; font-weight:600;">v3.0 RESEARCH</span>
+        </div>
+        <div class="brand-sub">ATB Potsdam &bull; Leibniz-Institut für Agrartechnik und Bioökonomie</div>
+      </div>
+    </div>
+
+    <!-- Station Overview & Health Pills -->
+    <div class="header-status-group">
+      <div class="status-pill">
+        <span class="status-dot pulse"></span>
+        <span>Station: <strong>Active Logging</strong></span>
+      </div>
+      <div class="status-pill">
+        <span>📡 <strong>LoRaWAN / 4G Bridge</strong> (RSSI: -68 dBm)</span>
+      </div>
+      <div class="status-pill">
+        <span>🔋 Gateway: <strong>92% (4.15V)</strong></span>
+      </div>
+      <div class="status-pill" style="color: #94a3b8;">
+        <span>Last Sync: <strong id="last-sync-time" style="color:#fff;">16:30 CEST</strong></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem; border-left:1px solid #334155; padding-left:1rem;">
+        <div style="width:32px; height:32px; border-radius:50%; background:#0284c7; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;">
+          DJ
+        </div>
+        <div style="font-size:0.8rem; line-height:1.2;">
+          <div style="font-weight:600;">David Janke</div>
+          <div style="color:#94a3b8; font-size:0.7rem;">Researcher Account</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Secondary View Navigation Bar -->
+  <nav class="sub-nav">
+    <div class="nav-tabs">
+      <button class="nav-tab-btn active" data-tab="monitoring">
+        <span>📊</span> <span>Live Monitoring & Trends</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="nodes-matrix">
+        <span>📡</span> <span>Node Fleet & Status</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="battery-health">
+        <span>🔋</span> <span>Battery Health Telemetry</span>
+      </button>
+      <button class="nav-tab-btn" data-tab="raw-export">
+        <span>📥</span> <span>Raw Data Export</span>
+      </button>
+      <button class="nav-tab-btn advanced-tab" data-tab="advanced-diagnostics">
+        <span>🛠</span> <span>Advanced Diagnostics (Engineers)</span>
+      </button>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <button id="btn-open-export" class="btn-primary" style="font-size:0.8rem; padding:0.4rem 0.8rem;">
+        <span>⬇</span> <span>Export CSV Data</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Application Workspace -->
+  <main class="app-container">
+
+    <!-- ========================================== -->
+    <!-- TAB 1: RESEARCHER LIVE MONITORING (DEFAULT) -->
+    <!-- ========================================== -->
+    <section id="tab-monitoring" class="tab-content-panel">
+
+      <!-- Node Selector Ribbon -->
+      <div class="selector-ribbon">
+        <div class="selector-left">
+          <label for="node-select-dropdown" style="font-weight:600; font-size:0.85rem; color:#475569; white-space:nowrap;">
+            Select Sensor Node:
+          </label>
+          <select id="node-select-dropdown" class="select-control" style="flex:1; max-width:380px;">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <div class="quick-stats">
+          <span id="badge-fleet-count" class="stat-badge battery">21 Nodes</span>
+          <span id="badge-online-count" class="stat-badge online">16 Online</span>
+          <span id="badge-offline-count" class="stat-badge offline">5 Disconnected</span>
+          <span id="badge-avg-battery" class="stat-badge battery">Avg Batt: 84%</span>
+        </div>
+      </div>
+
+      <!-- Disconnect Alert Banner (Shown only when selected node is offline) -->
+      <div id="disconnect-alert-banner" style="display:none; background:#fffbeb; border:1px solid #fef3c7; border-left:4px solid #d97706; padding:0.9rem 1.2rem; border-radius:8px; margin-bottom:1.5rem; justify-content:space-between; align-items:center;">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- Station Condition & Real-Time Measurement Tiles (LI-COR HOBO Style) -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <h4 style="font-size:0.9rem; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.05em;">
+          Current Environmental Readings (Click tile for Quick-Look)
+        </h4>
+        <span style="font-size:0.75rem; color:#64748b;">Telemetry update rate: 3s simulation</span>
+      </div>
+
+      <div class="measurement-grid">
+        <!-- Air Temperature -->
+        <div id="card-temp" class="measurement-card">
+          <div class="card-header-flex">
+            <span class="card-label">Air Temperature</span>
+            <span class="card-icon">🌡️</span>
+          </div>
+          <div class="card-value"><span class="card-val-number">21.3</span><span class="card-unit">°C</span></div>
+          <div class="card-subtext">
+            <span>SHT35 Precision Sensor</span>
+            <span class="quick-look-hint">Quick Look ↗</span>
+          </div>
+        </div>
+
+        <!-- Relative Humidity -->
+        <div id="card-rh" class="measurement-card">
+          <div class="card-header-flex">
+            <span class="card-label">Relative Humidity</span>
+            <span class="card-icon">💧</span>
+          </div>
+          <div class="card-value"><span class="card-val-number">64.8</span><span class="card-unit">%</span></div>
+          <div class="card-subtext">
+            <span>Calibrated capacitive</span>
+            <span class="quick-look-hint">Quick Look ↗</span>
+          </div>
+        </div>
+
+        <!-- Dew Point -->
+        <div id="card-dewpoint" class="measurement-card">
+          <div class="card-header-flex">
+            <span class="card-label">Dew Point</span>
+            <span class="card-icon">🌫️</span>
+          </div>
+          <div class="card-value"><span class="card-val-number">14.3</span><span class="card-unit">°C</span></div>
+          <div class="card-subtext">
+            <span>Magnus Formula</span>
+            <span class="quick-look-hint">Quick Look ↗</span>
+          </div>
+        </div>
+
+        <!-- Soil Moisture -->
+        <div id="card-soil" class="measurement-card">
+          <div class="card-header-flex">
+            <span class="card-label">Soil Moisture</span>
+            <span class="card-icon">🌱</span>
+          </div>
+          <div class="card-value"><span class="card-val-number">32.4</span><span class="card-unit">%</span></div>
+          <div class="card-subtext">
+            <span>Volumetric VWC (10-30cm)</span>
+            <span class="quick-look-hint">Quick Look ↗</span>
+          </div>
+        </div>
+
+        <!-- Solar Radiation -->
+        <div id="card-solar" class="measurement-card">
+          <div class="card-header-flex">
+            <span class="card-label">Solar Radiation</span>
+            <span class="card-icon">☀️</span>
+          </div>
+          <div class="card-value"><span class="card-val-number">480</span><span class="card-unit">W/m²</span></div>
+          <div class="card-subtext">
+            <span>PAR / Global Irradiance</span>
+            <span class="quick-look-hint">Quick Look ↗</span>
+          </div>
+        </div>
+
+        <!-- Battery Health Tile (New Agrotech Feature requested by user!) -->
+        <div id="card-battery" class="measurement-card">
+          <div class="card-header-flex">
+            <span class="card-label">Battery & Health</span>
+            <span class="card-icon">🔋</span>
+          </div>
+          <div class="card-value" style="font-size:1.45rem;"><span class="card-val-number">94% (4.14V)</span></div>
+          <div class="card-subtext">
+            <span style="color:#16a34a; font-weight:600;">● Excellent Health</span>
+            <span class="quick-look-hint">Trend ↗</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary Time Series Graph Box -->
+      <div class="chart-container-box">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h3>Interactive Time Series & Diurnal Trends</h3>
+            <p>Continuous sensor telemetry with zoom, pan, and multi-parameter overlays</p>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+            <!-- Metric Series Selector -->
+            <div class="chart-controls">
+              <button class="btn-pill metric-toggle-btn active" data-metric="temp">🌡️ Temp</button>
+              <button class="btn-pill metric-toggle-btn active" data-metric="rh">💧 RH</button>
+              <button class="btn-pill metric-toggle-btn active" data-metric="dewPoint">🌫️ Dew Point</button>
+              <button class="btn-pill metric-toggle-btn" data-metric="soil">🌱 Soil</button>
+              <button class="btn-pill metric-toggle-btn" data-metric="solar">☀️ Solar</button>
+            </div>
+
+            <!-- Time Range Presets -->
+            <div class="chart-controls" style="border-left:1px solid #cbd5e1; padding-left:0.75rem;">
+              <button class="btn-pill time-range-btn" data-days="1">24 Hours</button>
+              <button class="btn-pill time-range-btn active" data-days="7">7 Days</button>
+              <button class="btn-pill time-range-btn" data-days="30">30 Days</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-wrapper">
+          <canvas id="main-telemetry-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Simulation & Quick Action Bar -->
+      <div style="background:#ffffff; border:1px solid var(--border-color); border-radius:var(--radius-md); padding:0.9rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <span style="font-size:0.85rem; font-weight:600; color:#475569;">Simulation Controls:</span>
+          <button id="btn-toggle-sim" class="btn-secondary" style="font-size:0.8rem; padding:0.35rem 0.75rem;">
+            ⏸ Pause Live Stream
+          </button>
+          <button id="btn-sim-toggle-node" class="btn-secondary" style="font-size:0.8rem; padding:0.35rem 0.75rem; border-color:#d97706; color:#b45309;">
+            Disconnect Current Node (Simulate Offline)
+          </button>
+        </div>
+
+        <div style="font-size:0.8rem; color:#64748b;">
+          💡 <em>Note: Disconnected nodes are automatically grayed out to clearly show when data collection stopped.</em>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: NODE FLEET & STATUS MATRIX -->
+    <!-- ========================================== -->
+    <section id="tab-nodes-matrix" class="tab-content-panel" style="display:none;">
+      
+      <div class="matrix-container">
+        <div class="table-header-row">
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700;">Sensor Fleet Connectivity & Data Matrix</h3>
+            <p style="font-size:0.8rem; color:#64748b;">Overview of all 21 deployed nodes, battery telemetry, and disconnection timestamps</p>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+            <input type="text" id="node-search-input" placeholder="Search node ID, field, or hardware..." class="select-control" style="width:240px; font-size:0.8rem;">
+            <div class="chart-controls">
+              <button id="btn-filter-all" class="btn-pill active">All Nodes</button>
+              <button id="btn-filter-online" class="btn-pill">Online Only</button>
+              <button id="btn-filter-offline" class="btn-pill">Offline / Grayed Out</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Node Name & Location</th>
+                <th>Status</th>
+                <th>Current / Last Reading</th>
+                <th>Battery & Health</th>
+                <th>Data Collected</th>
+                <th>Last Seen / Disconnected Date</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="nodes-table-body">
+              <!-- Populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: BATTERY HEALTH TELEMETRY -->
+    <!-- ========================================== -->
+    <section id="tab-battery-health" class="tab-content-panel" style="display:none;">
+      
+      <!-- Top Battery Stats Summary -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+        <div class="measurement-card">
+          <div class="card-label">Fleet Battery Average</div>
+          <div class="card-value" style="color:#16a34a;">84% <span class="card-unit">(4.01V)</span></div>
+          <div class="card-subtext">Optimal operational range</div>
+        </div>
+        <div class="measurement-card">
+          <div class="card-label">Solar Self-Sustaining</div>
+          <div class="card-value" style="color:#0284c7;">14 <span class="card-unit">Nodes</span></div>
+          <div class="card-subtext">Harvesting > Daily consumption</div>
+        </div>
+        <div class="measurement-card">
+          <div class="card-label">Critical / Under-voltage</div>
+          <div class="card-value" style="color:#dc2626;">3 <span class="card-unit">Nodes</span></div>
+          <div class="card-subtext">Requires field cell replacement</div>
+        </div>
+        <div class="measurement-card">
+          <div class="card-label">Longest Continuous Uptime</div>
+          <div class="card-value" style="color:#475569;">182 <span class="card-unit">Days</span></div>
+          <div class="card-subtext">Node ATB_50 (Weather Tower)</div>
+        </div>
+      </div>
+
+      <!-- Battery Discharge & Solar Charging Chart -->
+      <div class="chart-container-box">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h3>Battery Voltage vs Solar Irradiance Curve</h3>
+            <p>14-day charge/discharge telemetry showing solar energy harvesting balance</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="battery-trend-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Battery Health Detail Table -->
+      <div class="matrix-container">
+        <h4 style="margin-bottom:0.75rem; font-size:1rem; font-weight:700;">Battery State of Health (SOH) Registry</h4>
+        <div style="overflow-x:auto;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Node ID</th>
+                <th>Hardware Type</th>
+                <th>Charge Level (%)</th>
+                <th>Live Voltage</th>
+                <th>Health Condition</th>
+                <th>Solar Harvest State</th>
+                <th>Estimated Remaining Run</th>
+              </tr>
+            </thead>
+            <tbody id="battery-table-body">
+              <!-- Populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: RAW DATA EXPORT (UNIFIED SINGLE OPTION) -->
+    <!-- ========================================== -->
+    <section id="tab-raw-export" class="tab-content-panel" style="display:none;">
+      
+      <div style="display:grid; grid-template-columns: 1fr 1.3fr; gap:1.5rem;">
+        
+        <!-- Export Configuration Card (Inspired by LI-COR New Export) -->
+        <div class="matrix-container">
+          <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.25rem;">Direct Raw Data Extraction</h3>
+          <p style="font-size:0.8rem; color:#64748b; margin-bottom:1.25rem;">
+            One-stop extraction tool for research datasets in standardized CSV / Excel format.
+          </p>
+
+          <form id="export-form" onsubmit="event.preventDefault(); triggerCSVDownload();">
+            
+            <!-- Step 1: Node Scope -->
+            <div style="margin-bottom:1.25rem;">
+              <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.5rem;">
+                1. Select Sensor Nodes:
+              </label>
+              <div style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.85rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="radio" name="export-node-choice" value="SELECTED" checked>
+                  <span>Current Selected Node (<strong id="export-node-lbl">ATB_44</strong>)</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="radio" name="export-node-choice" value="CONNECTED">
+                  <span>All Active Online Nodes (16 Nodes)</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                  <input type="radio" name="export-node-choice" value="ALL">
+                  <span>Entire Deployment Archive (All 21 Nodes including Offline)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Step 2: Metrics to Include -->
+            <div style="margin-bottom:1.25rem;">
+              <label style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.5rem;">
+                2. Environmental Parameters:
+              </label>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; font-size:0.85rem;">
+                <label style="display:flex; align-items:center; gap:0.4rem;">
+                  <input type="checkbox" class="export-metric-check" value="temp" checked> Air Temperature (°C)
+                </label>
+                <label style="display:flex; align-items:center; gap:0.4rem;">
+                  <input type="checkbox" class="export-metric-check" value="rh" checked> Relative Humidity (%)
+                </label>
+                <label style="display:flex; align-items:center; gap:0.4rem;">
+                  <input type="checkbox" class="export-metric-check" value="dewPoint" checked> Dew Point (°C)
+                </label>
+                <label style="display:flex; align-items:center; gap:0.4rem;">
+                  <input type="checkbox" class="export-metric-check" value="soilMoisture" checked> Soil Moisture (%)
+                </label>
+                <label style="display:flex; align-items:center; gap:0.4rem;">
+                  <input type="checkbox" class="export-metric-check" value="solarRad" checked> Solar Radiation (W/m²)
+                </label>
+                <label style="display:flex; align-items:center; gap:0.4rem;">
+                  <input type="checkbox" class="export-metric-check" value="battery" checked> Battery Telemetry
+                </label>
+              </div>
+            </div>
+
+            <!-- Step 3: Date Range -->
+            <div style="margin-bottom:1.5rem;">
+              <label for="export-range-select" style="display:block; font-weight:600; font-size:0.85rem; margin-bottom:0.5rem;">
+                3. Date Range:
+              </label>
+              <select id="export-range-select" class="select-control" style="width:100%;">
+                <option value="1">Last 24 Hours (High Resolution)</option>
+                <option value="7" selected>Last 7 Days (Standard)</option>
+                <option value="30">Last 30 Days (Monthly Archive)</option>
+                <option value="90">Full Season (90 Days)</option>
+              </select>
+            </div>
+
+            <button type="button" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;" onclick="document.getElementById('btn-execute-download').click();">
+              <span>⬇ Generate & Download CSV</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Export History & Saved Reports (Replicating LI-COR Export Queue) -->
+        <div class="matrix-container">
+          <div class="table-header-row">
+            <div>
+              <h3 style="font-size:1.15rem; font-weight:700;">Export Queue & Recent Downloads</h3>
+              <p style="font-size:0.8rem; color:#64748b;">Previous generated data packages ready for instant download</p>
+            </div>
+          </div>
+
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Dataset Name</th>
+                <th>Scope</th>
+                <th>Range</th>
+                <th>Size</th>
+                <th>Generated</th>
+                <th>Status</th>
+                <th style="text-align:right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="export-history-body">
+              <!-- Populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: ADVANCED DIAGNOSTICS & ENGINEERING -->
+    <!-- (Clearly demarcated for engineers/diagnostics) -->
+    <!-- ========================================== -->
+    <section id="tab-advanced-diagnostics" class="tab-content-panel" style="display:none;">
+      
+      <div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:4px solid #0284c7; padding:1rem; border-radius:8px; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h4 style="font-size:0.95rem; font-weight:700; color:#1e3a8a;">🛠 Engineering & Diagnostics Subsystem</h4>
+          <p style="font-size:0.8rem; color:#1e40af;">
+            Contains technical diagnostics: LoRaWAN PHY logs, WiFi RSSI scans, ThingSpeak API keys, and raw MicroSD hex dumps.
+          </p>
+        </div>
+        <span class="badge" style="background:#dbeafe; color:#1e40af; font-weight:700;">TEST ENGINEER MODE</span>
+      </div>
+
+      <!-- Diagnostic Charts -->
+      <div class="chart-container-box">
+        <div class="chart-header">
+          <div class="chart-title-group">
+            <h3>Fleet Multi-Node Temperature Spread Comparison</h3>
+            <p>Evaluating micro-climate divergence across top 5 active field motes</p>
+          </div>
+        </div>
+        <div class="chart-wrapper">
+          <canvas id="multi-node-diag-canvas"></canvas>
+        </div>
+      </div>
+
+      <!-- Advanced Technical Panels Grid -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:1.5rem;">
+        
+        <!-- LoRaWAN Gateway Console -->
+        <div class="matrix-container">
+          <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;">📡 LoRaWAN Gateway Packet Log</h4>
+          <div style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; background:#0f172a; color:#38bdf8; padding:0.75rem; border-radius:6px; max-height:200px; overflow-y:auto; line-height:1.6;">
+            <div>[16:30:12] RX PKT 0x3291998 RSSI=-79 SNR=6.2 Freq=868.1MHz SF7BW125 CR=4/5 (OK)</div>
+            <div>[16:30:08] RX PKT 0x998795  RSSI=-68 SNR=9.2 Freq=868.3MHz SF7BW125 CR=4/5 (OK)</div>
+            <div>[16:29:54] RX PKT 0x998137  RSSI=-72 SNR=8.5 Freq=868.5MHz SF7BW125 CR=4/5 (OK)</div>
+            <div>[16:29:40] RX PKT 0x3291999 RSSI=-58 SNR=12.4 Freq=868.1MHz SF7BW125 CR=4/5 (OK)</div>
+            <div>[16:28:15] WARN: Node ATB_58 frame counter timeout (No uplink in 86400s)</div>
+          </div>
+        </div>
+
+        <!-- Wi-Fi BSSID Scan Matrix -->
+        <div class="matrix-container">
+          <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;">📶 Wi-Fi 2.4GHz Site Scan</h4>
+          <div style="font-size:0.8rem; color:#475569;">
+            <div style="display:flex; justify-content:space-between; padding:0.3rem 0; border-bottom:1px solid #e2e8f0;">
+              <span><strong>ATB_Field_IoT_5G</strong> (Ch 6)</span>
+              <span style="color:#16a34a; font-weight:600;">-62 dBm (Connected)</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.3rem 0; border-bottom:1px solid #e2e8f0;">
+              <span><strong>eduroam</strong> (Ch 1)</span>
+              <span style="color:#d97706;">-78 dBm</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.3rem 0; border-bottom:1px solid #e2e8f0;">
+              <span><strong>ATB_Guest</strong> (Ch 11)</span>
+              <span style="color:#64748b;">-84 dBm</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.3rem 0;">
+              <span><strong>MeteoStation_Direct</strong> (Ch 6)</span>
+              <span style="color:#64748b;">-90 dBm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ThingSpeak API & Credentials Registry -->
+        <div class="matrix-container">
+          <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:0.5rem;">🔑 API Keys & Channel IDs</h4>
+          <div style="font-size:0.8rem;">
+            <div style="margin-bottom:0.4rem;">
+              <strong>Current Node:</strong> ATB_44 | <strong>Channel:</strong> 998795
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; background:#f1f5f9; padding:0.5rem; border-radius:4px; margin-bottom:0.4rem;">
+              Read API Key: DS82••••••••Z14Y
+            </div>
+            <div style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; background:#f1f5f9; padding:0.5rem; border-radius:4px;">
+              Write API Key: IA3Y••••••••DNTB
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODALS: QUICK LOOK & RAW DATA EXPORT -->
+  <!-- ========================================== -->
+
+  <!-- Quick Look Modal (LI-COR HOBO Style) -->
+  <div id="quicklook-modal" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div>
+          <h3 id="quicklook-title" style="font-size:1.15rem; font-weight:700;">Quick Look</h3>
+          <p id="quicklook-subtitle" style="font-size:0.8rem; color:#64748b;">Detailed 14-day trend analysis</p>
+        </div>
+        <button id="quicklook-close-btn" class="modal-close-btn">&times;</button>
+      </div>
+
+      <div style="height:320px; position:relative; margin-bottom:1rem;">
+        <canvas id="quicklook-canvas"></canvas>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.75rem; color:#64748b;">Drag or hover over plot to inspect individual measurement timestamps.</span>
+        <button class="btn-secondary" style="font-size:0.8rem;" onclick="document.getElementById('quicklook-close-btn').click();">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Raw Export Modal Dialog -->
+  <div id="export-modal" class="modal-overlay">
+    <div class="modal-dialog" style="max-width:550px;">
+      <div class="modal-header">
+        <h3 style="font-size:1.15rem; font-weight:700;">⬇ Export Raw Data Package</h3>
+        <button id="btn-close-export" class="modal-close-btn">&times;</button>
+      </div>
+      <p style="font-size:0.85rem; color:#475569; margin-bottom:1rem;">
+        Export high-resolution time-series data for analysis in R, Python, SPSS, or Excel.
+      </p>
+      
+      <div style="margin-bottom:1rem;">
+        <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:0.25rem;">Dataset Range:</label>
+        <select class="select-control" style="width:100%;">
+          <option value="7">Last 7 Days (Standard)</option>
+          <option value="1">Last 24 Hours</option>
+          <option value="30">Last 30 Days</option>
+        </select>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:1.5rem;">
+        <button class="btn-secondary" onclick="document.getElementById('btn-close-export').click();">Cancel</button>
+        <button id="btn-execute-download" class="btn-primary">Download CSV File</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data-engine.js"></script>
+  <script src="js/charts-manager.js"></script>
+  <script src="js/dashboard-app.js"></script>
+</body>
+</html>
