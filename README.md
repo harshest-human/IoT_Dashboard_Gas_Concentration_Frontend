@@ -1,6 +1,6 @@
 # Adaptive AgroTech Cloud – Next-Gen Research & Diagnostics Frontend
 
-Live demo: https://harshest-human.github.io/IoT_Dashboard_Gas_Concentration_Frontend/
+**GitHub Pages live website:** [Open the IoT Gas Concentration Dashboard](https://harshest-human.github.io/IoT_Dashboard_Gas_Concentration_Frontend/)
 
 This public repository contains a simulated gas-monitoring dashboard. GitHub Pages deploys the dashboard automatically when changes are pushed to `main`.
 
