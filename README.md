@@ -8,7 +8,7 @@
 
 ## 📌 Project Objectives & Redesign Rationale
 
-This project delivers a reimagined, streamlined frontend GUI for **Adaptive AgroTech Company**'s IoT sensor ecosystem, addressing key usability issues faced by agricultural researchers:
+This project delivers a reimagined, streamlined frontend GUI for **Adaptive AgroTech Company**'s IoT sensor ecosystem, addressing key usability issues faced by gas-monitoring researchers:
 
 1. **Separation of Researcher Needs vs. Test Engineering Diagnostics**:
    * *Problem:* The legacy Adaptive AgroTech dashboard mixed multiple technical consoles (LoRaWAN packet logs, Wi-Fi 2.4 GHz BSSID scans, ThingSpeak API key management, SD card file dump tools) into the main researcher workflow, overwhelming non-engineering users.
@@ -108,3 +108,7 @@ IoT_Dashboard_Gas_Concentration_Frontend/
 ---
 
 *Adaptive AgroTech Proprietary – Developed in collaboration with ATB Potsdam (Leibniz-Institut für Agrartechnik und Bioökonomie e.V.).*
+
+## Gas concentration examples
+
+The dashboard demonstrates CO₂, CH₄, and NH₃ concentrations in ppm alongside air temperature (°C) and relative humidity (%). All readings are simulated examples from dairy-barn gas sampling points, not live measurements. Metric cards, quick-look charts, fleet comparisons, and CSV exports use these parameters. Battery solar-charging telemetry remains available in diagnostics.

@@ -1,6 +1,6 @@
 /**
  * Adaptive AgroTech Data Simulation Engine
- * Generates realistic agricultural sensor data, battery telemetry, and connectivity states.
+ * Generates realistic gas concentration sensor data, battery telemetry, and connectivity states.
  * Supports connected and disconnected node lifecycles, time-series generation, and CSV exports.
  */
 
@@ -11,8 +11,8 @@
   const INITIAL_NODES = [
     {
       id: "ATB_44",
-      name: "ATB_44 (Canopy North)",
-      field: "Field 1 - Winter Wheat",
+      name: "ATB_44 (Gas Sampling Point 1)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "998795",
       writeKey: "IA3Y••••••••DNTB",
       readKey: "DS82••••••••Z14Y",
@@ -32,14 +32,14 @@
       storageSize: "6.1 MB",
       temp: 21.3,
       rh: 64.8,
-      soilMoisture: 32.4,
-      solarRad: 480,
-      dewPoint: 14.3
+      ch4: 12.2,
+      nh3: 1.8,
+      co2: 805
     },
     {
       id: "ATB_45",
-      name: "ATB_45 (Canopy South)",
-      field: "Field 1 - Winter Wheat",
+      name: "ATB_45 (Gas Sampling Point 2)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "998137",
       writeKey: "VZMS••••••••T477",
       readKey: "211R••••••••9F1F",
@@ -59,14 +59,14 @@
       storageSize: "6.0 MB",
       temp: 21.8,
       rh: 63.2,
-      soilMoisture: 30.1,
-      solarRad: 510,
-      dewPoint: 14.5
+      ch4: 12.9,
+      nh3: 2.2,
+      co2: 840
     },
     {
       id: "ATB_46",
-      name: "ATB_46 (Root Zone 30cm)",
-      field: "Field 1 - Winter Wheat",
+      name: "ATB_46 (Gas Sampling Point 3)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "998740",
       writeKey: "00SK••••••••IPP2",
       readKey: "VYW8••••••••N0CY",
@@ -86,14 +86,14 @@
       storageSize: "5.9 MB",
       temp: 18.5,
       rh: 78.4,
-      soilMoisture: 36.8,
-      solarRad: 0,
-      dewPoint: 14.7
+      ch4: 13.6,
+      nh3: 2.6,
+      co2: 875
     },
     {
       id: "ATB_47",
-      name: "ATB_47 (Soil Surface)",
-      field: "Field 2 - Maize Plot",
+      name: "ATB_47 (Gas Sampling Point 4)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "998743",
       writeKey: "537C••••••••HC09",
       readKey: "38BY••••••••Z1DA",
@@ -113,14 +113,14 @@
       storageSize: "5.2 MB",
       temp: 22.4,
       rh: 59.8,
-      soilMoisture: 24.2,
-      solarRad: 540,
-      dewPoint: 14.1
+      ch4: 14.3,
+      nh3: 3.0,
+      co2: 910
     },
     {
       id: "ATB_48",
-      name: "ATB_48 (Lysimeter Unit A)",
-      field: "Field 2 - Maize Plot",
+      name: "ATB_48 (Gas Sampling Point 5)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "998744",
       writeKey: "TI8M••••••••FPX7",
       readKey: "HTMC••••••••BGX1",
@@ -140,14 +140,14 @@
       storageSize: "5.8 MB",
       temp: 20.9,
       rh: 67.5,
-      soilMoisture: 28.6,
-      solarRad: 460,
-      dewPoint: 14.6
+      ch4: 15.0,
+      nh3: 3.4,
+      co2: 945
     },
     {
       id: "ATB_49",
-      name: "ATB_49 (Lysimeter Unit B)",
-      field: "Field 2 - Maize Plot",
+      name: "ATB_49 (Gas Sampling Point 6)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3291998",
       writeKey: "VWT1••••••••KXFK",
       readKey: "1MR8••••••••OEE9",
@@ -167,14 +167,14 @@
       storageSize: "5.9 MB",
       temp: 21.0,
       rh: 66.8,
-      soilMoisture: 29.1,
-      solarRad: 470,
-      dewPoint: 14.5
+      ch4: 15.7,
+      nh3: 3.8,
+      co2: 980
     },
     {
       id: "ATB_50",
-      name: "ATB_50 (Weather Tower Top)",
-      field: "Met Station Alpha",
+      name: "ATB_50 (Gas Sampling Point 7)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3291999",
       writeKey: "HW8O••••••••IZLZ",
       readKey: "25GR••••••••FWIY",
@@ -194,14 +194,14 @@
       storageSize: "7.0 MB",
       temp: 20.4,
       rh: 62.1,
-      soilMoisture: 0, // Tower node (no soil probe)
-      solarRad: 620,
-      dewPoint: 12.8
+      ch4: 16.4,
+      nh3: 4.2,
+      co2: 1015
     },
     {
       id: "ATB_51",
-      name: "ATB_51 (Apple Orchard Upper)",
-      field: "Horticulture Plot C",
+      name: "ATB_51 (Gas Sampling Point 8)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292036",
       writeKey: "56SD••••••••0BC0",
       readKey: "X9TC••••••••4R8J",
@@ -221,15 +221,15 @@
       storageSize: "4.8 MB",
       temp: 21.4,
       rh: 70.2,
-      soilMoisture: 34.5,
-      solarRad: 310,
-      dewPoint: 15.6
+      ch4: 17.1,
+      nh3: 4.6,
+      co2: 1050
     },
     // Disconnected / Offline nodes (Grayed out in researcher UI)
     {
       id: "ATB_52",
-      name: "ATB_52 (Apple Orchard Lower)",
-      field: "Horticulture Plot C",
+      name: "ATB_52 (Gas Sampling Point 9)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292038",
       writeKey: "UUMC••••••••IO7J",
       readKey: "A5IQ••••••••QLXS",
@@ -250,14 +250,14 @@
       storageSize: "4.4 MB",
       temp: 17.2,
       rh: 84.1,
-      soilMoisture: 35.0,
-      solarRad: 0,
-      dewPoint: 14.4
+      ch4: 17.8,
+      nh3: 1.0,
+      co2: 1085
     },
     {
       id: "ATB_53",
-      name: "ATB_53 (Greenhouse 1 Ambient)",
-      field: "Protected Culture Area",
+      name: "ATB_53 (Gas Sampling Point 10)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292092",
       writeKey: "0SRG••••••••UMNH",
       readKey: "9DMH••••••••A51W",
@@ -277,14 +277,14 @@
       storageSize: "7.6 MB",
       temp: 24.8,
       rh: 72.4,
-      soilMoisture: 42.1,
-      solarRad: 380,
-      dewPoint: 19.4
+      ch4: 8.0,
+      nh3: 1.4,
+      co2: 1120
     },
     {
       id: "ATB_54",
-      name: "ATB_54 (Greenhouse 2 Hydroponics)",
-      field: "Protected Culture Area",
+      name: "ATB_54 (Gas Sampling Point 11)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292093",
       writeKey: "LH9C••••••••HB60",
       readKey: "MU7B••••••••ZJXW",
@@ -304,14 +304,14 @@
       storageSize: "7.5 MB",
       temp: 25.2,
       rh: 74.0,
-      soilMoisture: 48.0,
-      solarRad: 390,
-      dewPoint: 20.1
+      ch4: 8.7,
+      nh3: 1.8,
+      co2: 1155
     },
     {
       id: "ATB_55",
-      name: "ATB_55 (Drainage Sump Mote)",
-      field: "Protected Culture Area",
+      name: "ATB_55 (Gas Sampling Point 12)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292095",
       writeKey: "G9HF••••••••IDRH",
       readKey: "AB3U••••••••C58V",
@@ -332,14 +332,14 @@
       storageSize: "3.5 MB",
       temp: 19.0,
       rh: 95.0,
-      soilMoisture: 60.0,
-      solarRad: 0,
-      dewPoint: 18.2
+      ch4: 9.4,
+      nh3: 2.2,
+      co2: 1190
     },
     {
       id: "ATB_56",
-      name: "ATB_56 (Soybean Trial Block 1)",
-      field: "Field 3 - Legume Trials",
+      name: "ATB_56 (Gas Sampling Point 13)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292096",
       writeKey: "6J0A••••••••QF0G",
       readKey: "1SZP••••••••VZB5",
@@ -359,14 +359,14 @@
       storageSize: "5.5 MB",
       temp: 21.6,
       rh: 65.1,
-      soilMoisture: 31.8,
-      solarRad: 490,
-      dewPoint: 14.7
+      ch4: 10.1,
+      nh3: 2.6,
+      co2: 1225
     },
     {
       id: "ATB_57",
-      name: "ATB_57 (Soybean Trial Block 2)",
-      field: "Field 3 - Legume Trials",
+      name: "ATB_57 (Gas Sampling Point 14)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292121",
       writeKey: "2TMD••••••••7W3C",
       readKey: "ZXH5••••••••L9E3",
@@ -386,14 +386,14 @@
       storageSize: "5.5 MB",
       temp: 21.7,
       rh: 65.4,
-      soilMoisture: 31.2,
-      solarRad: 485,
-      dewPoint: 14.8
+      ch4: 10.8,
+      nh3: 3.0,
+      co2: 1260
     },
     {
       id: "ATB_58",
-      name: "ATB_58 (Cover Crop Density)",
-      field: "Field 3 - Legume Trials",
+      name: "ATB_58 (Gas Sampling Point 15)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292126",
       writeKey: "HCX1••••••••NY1W",
       readKey: "ULTJ••••••••4NG3",
@@ -414,14 +414,14 @@
       storageSize: "4.1 MB",
       temp: 16.8,
       rh: 79.0,
-      soilMoisture: 27.5,
-      solarRad: 0,
-      dewPoint: 13.1
+      ch4: 11.5,
+      nh3: 3.4,
+      co2: 1295
     },
     {
       id: "ATB_59",
-      name: "ATB_59 (Silvo-Pasture Tree)",
-      field: "Agroforestry Zone",
+      name: "ATB_59 (Gas Sampling Point 16)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292127",
       writeKey: "QOH8••••••••9LQH",
       readKey: "P8NQ••••••••IUK0",
@@ -441,14 +441,14 @@
       storageSize: "5.3 MB",
       temp: 20.6,
       rh: 68.9,
-      soilMoisture: 33.2,
-      solarRad: 340,
-      dewPoint: 14.6
+      ch4: 12.2,
+      nh3: 3.8,
+      co2: 1330
     },
     {
       id: "ATB_60",
-      name: "ATB_60 (Pasture Soil 10cm)",
-      field: "Agroforestry Zone",
+      name: "ATB_60 (Gas Sampling Point 17)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3292128",
       writeKey: "96HT••••••••HM3N",
       readKey: "2R6D••••••••LHL1",
@@ -468,14 +468,14 @@
       storageSize: "5.8 MB",
       temp: 19.8,
       rh: 71.0,
-      soilMoisture: 38.4,
-      solarRad: 0,
-      dewPoint: 14.3
+      ch4: 12.9,
+      nh3: 4.2,
+      co2: 1365
     },
     {
       id: "ATB_61",
-      name: "ATB_61 (Irrigation Pivot Control)",
-      field: "Field 4 - Precision Pivot",
+      name: "ATB_61 (Gas Sampling Point 18)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3255020",
       writeKey: "7QW9••••••••GBUV",
       readKey: "1BP9••••••••JB7R",
@@ -495,14 +495,14 @@
       storageSize: "6.6 MB",
       temp: 21.2,
       rh: 66.2,
-      soilMoisture: 35.6,
-      solarRad: 505,
-      dewPoint: 14.6
+      ch4: 13.6,
+      nh3: 4.6,
+      co2: 700
     },
     {
       id: "ATB_62",
-      name: "ATB_62 (Pivot Outer Span)",
-      field: "Field 4 - Precision Pivot",
+      name: "ATB_62 (Gas Sampling Point 19)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3255021",
       writeKey: "AYGK••••••••GX7G",
       readKey: "01NC••••••••EV3T",
@@ -522,14 +522,14 @@
       storageSize: "6.5 MB",
       temp: 21.5,
       rh: 64.9,
-      soilMoisture: 34.1,
-      solarRad: 515,
-      dewPoint: 14.5
+      ch4: 14.3,
+      nh3: 1.0,
+      co2: 735
     },
     {
       id: "ATB_63",
-      name: "ATB_63 (Microclimate Edge 1)",
-      field: "Boundary Ecology",
+      name: "ATB_63 (Gas Sampling Point 20)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3255023",
       writeKey: "9M9D••••••••9QG3",
       readKey: "QNCO••••••••DMPQ",
@@ -550,14 +550,14 @@
       storageSize: "2.8 MB",
       temp: 15.4,
       rh: 88.2,
-      soilMoisture: 26.0,
-      solarRad: 0,
-      dewPoint: 13.5
+      ch4: 15.0,
+      nh3: 1.4,
+      co2: 770
     },
     {
       id: "ATB_64",
-      name: "ATB_64 (Microclimate Edge 2)",
-      field: "Boundary Ecology",
+      name: "ATB_64 (Gas Sampling Point 21)",
+      field: "Dairy Barn - Gas Monitoring",
       channelId: "3255024",
       writeKey: "LC6Z••••••••1NES",
       readKey: "44U4••••••••TJDC",
@@ -578,20 +578,13 @@
       storageSize: "2.1 MB",
       temp: 14.8,
       rh: 89.5,
-      soilMoisture: 25.2,
-      solarRad: 0,
-      dewPoint: 13.1
+      ch4: 15.7,
+      nh3: 1.8,
+      co2: 805
     }
   ];
 
-  // Helper Magnus Formula to calculate Dew Point
-  function calculateDewPoint(temp, rh) {
-    const a = 17.27;
-    const b = 237.7;
-    const alpha = ((a * temp) / (b + temp)) + Math.log(rh / 100.0);
-    const dp = (b * alpha) / (a - alpha);
-    return Math.round(dp * 100) / 100;
-  }
+
 
   // Generate realistic time-series for a node
   function generateTimeSeries(node, days = 7, stepMinutes = 60) {
@@ -604,7 +597,7 @@
     // Baseline params for node
     const baseTemp = node.temp || 20.0;
     const baseRH = node.rh || 65.0;
-    const baseSoil = node.soilMoisture || 30.0;
+    const baseCH4 = node.ch4;
     const baseBatt = node.batteryVoltage || 4.0;
 
     for (let i = 0; i <= totalPoints; i++) {
@@ -621,19 +614,17 @@
       // RH inverse to temp
       const rh = Math.min(98, Math.max(25, Math.round((baseRH - (diurnalFactor * 18.0) - (dayNoise * 2.0)) * 10) / 10));
       
-      // Dew point
-      const dewPoint = calculateDewPoint(temp, rh);
+      const co2 = Math.round(node.co2 + diurnalFactor * 120 + dayNoise * 20);
+      const nh3 = Math.max(0, Math.round((node.nh3 + diurnalFactor * 0.6 + dayNoise * 0.2) * 100) / 100);
 
-      // Solar Radiation: 0 at night (hour < 6 or hour > 19), peaks at noon
+      // NH₃: 0 at night (hour < 6 or hour > 19), peaks at noon
       let solar = 0;
       if (hour >= 6.5 && hour <= 18.5) {
         const solarPeak = Math.sin(((hour - 6.5) / 12) * Math.PI);
         solar = Math.max(0, Math.round((solarPeak * 650) + ((Math.random() - 0.3) * 50)));
       }
 
-      // Soil Moisture (slow drying cycle with occasional rain bump)
-      const rainBump = (i > totalPoints * 0.4 && i < totalPoints * 0.5) ? 6.0 : 0;
-      const soil = Math.round((baseSoil - ((totalPoints - i) * 0.015) + rainBump + ((Math.random() - 0.5) * 0.2)) * 10) / 10;
+      const ch4 = Math.max(0, Math.round((baseCH4 + diurnalFactor * 2 + dayNoise * 0.3) * 100) / 100);
 
       // Battery Voltage (solar bump in daylight, gentle drain at night)
       let battVolt = baseBatt;
@@ -655,9 +646,10 @@
         timeLabel: timestamp.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         temp,
         rh,
-        dewPoint,
+        co2,
         solar,
-        soil,
+        nh3,
+        ch4,
         battVolt: Math.round(battVolt * 100) / 100,
         battPct,
         rssi
@@ -677,9 +669,9 @@
       });
       this.cache = new Map();
       this.exportLogs = [
-        { id: "EXP-9082", name: "Wheat_Canopy_7D_AllParams.csv", nodes: "ATB_44, ATB_45, ATB_46", range: "Last 7 Days", size: "482 KB", created: "2026-10-06 14:30", status: "Ready" },
-        { id: "EXP-9081", name: "Soil_Moisture_Lysimeters_30D.csv", nodes: "ATB_48, ATB_49", range: "Last 30 Days", size: "1.2 MB", created: "2026-10-05 09:15", status: "Ready" },
-        { id: "EXP-9080", name: "Greenhouse_Environmental_Sync.csv", nodes: "ATB_53, ATB_54", range: "Last 14 Days", size: "920 KB", created: "2026-10-02 18:00", status: "Ready" }
+        { id: "EXP-9082", name: "Barn_Gas_7D_AllParams.csv", nodes: "ATB_44, ATB_45, ATB_46", range: "Last 7 Days", size: "482 KB", created: "2026-10-06 14:30", status: "Ready" },
+        { id: "EXP-9081", name: "CH4_NH3_Sampling_30D.csv", nodes: "ATB_48, ATB_49", range: "Last 30 Days", size: "1.2 MB", created: "2026-10-05 09:15", status: "Ready" },
+        { id: "EXP-9080", name: "Barn_Environmental_Sync.csv", nodes: "ATB_53, ATB_54", range: "Last 14 Days", size: "920 KB", created: "2026-10-02 18:00", status: "Ready" }
       ];
     }
 
@@ -756,7 +748,10 @@
           node.temp = Math.round((node.temp + tempDelta) * 10) / 10;
           const rhDelta = (Math.random() - 0.5) * 0.3;
           node.rh = Math.min(99, Math.max(20, Math.round((node.rh + rhDelta) * 10) / 10));
-          node.dewPoint = calculateDewPoint(node.temp, node.rh);
+          for (const key of ['co2', 'ch4', 'nh3']) {
+            const jitter = key === 'co2' ? 8 : 0.1;
+            node[key] = Math.max(0, Math.round((node[key] + (Math.random() - 0.5) * jitter) * 100) / 100);
+          }
           node.dataPointsCollected += 1;
         }
       });
@@ -770,9 +765,9 @@
       const header = ["Timestamp_ISO", "Date_Time", "Node_ID", "Field_Location", "Hardware_Type", "Node_Status"];
       if (selectedMetrics.includes("temp")) header.push("Air_Temperature_degC");
       if (selectedMetrics.includes("rh")) header.push("Relative_Humidity_pct");
-      if (selectedMetrics.includes("dewPoint")) header.push("Dew_Point_degC");
-      if (selectedMetrics.includes("soilMoisture")) header.push("Soil_Moisture_pct");
-      if (selectedMetrics.includes("solarRad")) header.push("Solar_Radiation_Wm2");
+      if (selectedMetrics.includes("co2")) header.push("CO2_ppm");
+      if (selectedMetrics.includes("ch4")) header.push("CH4_ppm");
+      if (selectedMetrics.includes("nh3")) header.push("NH3_ppm");
       if (selectedMetrics.includes("battery")) {
         header.push("Battery_Level_pct");
         header.push("Battery_Voltage_V");
@@ -797,9 +792,9 @@
 
           if (selectedMetrics.includes("temp")) row.push(pt.temp);
           if (selectedMetrics.includes("rh")) row.push(pt.rh);
-          if (selectedMetrics.includes("dewPoint")) row.push(pt.dewPoint);
-          if (selectedMetrics.includes("soilMoisture")) row.push(pt.soil);
-          if (selectedMetrics.includes("solarRad")) row.push(pt.solar);
+          if (selectedMetrics.includes("co2")) row.push(pt.co2);
+          if (selectedMetrics.includes("ch4")) row.push(pt.ch4);
+          if (selectedMetrics.includes("nh3")) row.push(pt.nh3);
           if (selectedMetrics.includes("battery")) {
             row.push(pt.battPct);
             row.push(pt.battVolt);

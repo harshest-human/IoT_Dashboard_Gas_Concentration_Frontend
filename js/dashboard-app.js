@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedNodeId: 'ATB_44',
     activeTab: 'monitoring', // 'monitoring', 'nodes-matrix', 'battery-health', 'raw-export', 'advanced-diagnostics'
     timeRangeDays: 7,
-    activeMetrics: ['temp', 'rh', 'dewPoint'],
+    activeMetrics: ['temp', 'rh', 'co2', 'ch4', 'nh3'],
     simulationRunning: true,
     simulationTimer: null,
     searchQuery: '',
@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Metric Cards
     cardTemp: document.getElementById('card-temp'),
     cardRH: document.getElementById('card-rh'),
-    cardDewPoint: document.getElementById('card-dewpoint'),
-    cardSoil: document.getElementById('card-soil'),
-    cardSolar: document.getElementById('card-solar'),
+    cardCO2: document.getElementById('card-co2'),
+    cardCH4: document.getElementById('card-ch4'),
+    cardNH3: document.getElementById('card-nh3'),
     cardBattery: document.getElementById('card-battery'),
     // Disconnect Alert Banner
     disconnectBanner: document.getElementById('disconnect-alert-banner'),
@@ -153,9 +153,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update Metric Card Values & Styles
     updateCard(elements.cardTemp, node.temp, '°C', 'Air Temperature', node.status, 'temp');
     updateCard(elements.cardRH, node.rh, '%', 'Relative Humidity', node.status, 'rh');
-    updateCard(elements.cardDewPoint, node.dewPoint, '°C', 'Dew Point (Magnus)', node.status, 'dewPoint');
-    updateCard(elements.cardSoil, node.soilMoisture > 0 ? node.soilMoisture : 'N/A', node.soilMoisture > 0 ? '%' : '', 'Soil Moisture', node.status, 'soil');
-    updateCard(elements.cardSolar, node.solarRad, 'W/m²', 'Solar Radiation', node.status, 'solar');
+    updateCard(elements.cardCO2, node.co2, 'ppm', 'CO₂', node.status, 'co2');
+    updateCard(elements.cardCH4, node.ch4, 'ppm', 'CH₄', node.status, 'ch4');
+    updateCard(elements.cardNH3, node.nh3, 'ppm', 'NH₃', node.status, 'nh3');
     updateCard(elements.cardBattery, `${node.batteryLevel}% (${node.batteryVoltage}V)`, '', `Battery: ${node.batteryHealth}`, node.status, 'battery');
 
     // Render Primary Chart
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </td>
         <td>
           <div style="font-weight:600;">${node.temp}°C / ${node.rh}%</div>
-          <div style="font-size:0.75rem; color:#64748b;">Dew: ${node.dewPoint}°C</div>
+          <div style="font-size:0.75rem; color:#64748b;">CO₂: ${node.co2} ppm</div>
         </td>
         <td>
           <div class="battery-indicator">
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.downloadSampleCSV = function(name) {
-    const csvContent = window.AgroDataEngine.generateCSVContent(['ALL'], ['temp', 'rh', 'dewPoint', 'battery'], 7);
+    const csvContent = window.AgroDataEngine.generateCSVContent(['ALL'], ['temp', 'rh', 'co2', 'ch4', 'nh3', 'battery'], 7);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Metric Toggle Toggles (Temp, RH, Dew, Soil, Solar)
+    // Metric Toggle Toggles (Temperature, RH, CO₂, CH₄, NH₃)
     elements.metricToggleBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const metric = btn.dataset.metric;
@@ -556,10 +556,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (node.status === 'connected') {
           const valTemp = elements.cardTemp ? elements.cardTemp.querySelector('.card-val-number') : null;
           const valRH = elements.cardRH ? elements.cardRH.querySelector('.card-val-number') : null;
-          const valDew = elements.cardDewPoint ? elements.cardDewPoint.querySelector('.card-val-number') : null;
+          const valCO2 = elements.cardCO2 ? elements.cardCO2.querySelector('.card-val-number') : null;
           if (valTemp) valTemp.textContent = node.temp;
           if (valRH) valRH.textContent = node.rh;
-          if (valDew) valDew.textContent = node.dewPoint;
+          if (valCO2) valCO2.textContent = node.co2;
+          elements.cardCH4.querySelector('.card-val-number').textContent = node.ch4;
+          elements.cardNH3.querySelector('.card-val-number').textContent = node.nh3;
         }
       }
     }, 3000);

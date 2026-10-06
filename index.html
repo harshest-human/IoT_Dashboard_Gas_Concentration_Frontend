@@ -150,41 +150,41 @@
           </div>
         </div>
 
-        <!-- Dew Point -->
-        <div id="card-dewpoint" class="measurement-card">
+        <!-- CO₂ -->
+        <div id="card-co2" class="measurement-card">
           <div class="card-header-flex">
-            <span class="card-label">Dew Point</span>
+            <span class="card-label">CO₂</span>
             <span class="card-icon">🌫️</span>
           </div>
-          <div class="card-value"><span class="card-val-number">14.3</span><span class="card-unit">°C</span></div>
+          <div class="card-value"><span class="card-val-number">850</span><span class="card-unit">ppm</span></div>
           <div class="card-subtext">
-            <span>Magnus Formula</span>
+            <span>Simulated CO₂ concentration</span>
             <span class="quick-look-hint">Quick Look ↗</span>
           </div>
         </div>
 
-        <!-- Soil Moisture -->
-        <div id="card-soil" class="measurement-card">
+        <!-- CH₄ -->
+        <div id="card-ch4" class="measurement-card">
           <div class="card-header-flex">
-            <span class="card-label">Soil Moisture</span>
+            <span class="card-label">CH₄</span>
             <span class="card-icon">🌱</span>
           </div>
-          <div class="card-value"><span class="card-val-number">32.4</span><span class="card-unit">%</span></div>
+          <div class="card-value"><span class="card-val-number">12.4</span><span class="card-unit">ppm</span></div>
           <div class="card-subtext">
-            <span>Volumetric VWC (10-30cm)</span>
+            <span>Simulated CH₄ concentration</span>
             <span class="quick-look-hint">Quick Look ↗</span>
           </div>
         </div>
 
-        <!-- Solar Radiation -->
-        <div id="card-solar" class="measurement-card">
+        <!-- NH₃ -->
+        <div id="card-nh3" class="measurement-card">
           <div class="card-header-flex">
-            <span class="card-label">Solar Radiation</span>
+            <span class="card-label">NH₃</span>
             <span class="card-icon">☀️</span>
           </div>
-          <div class="card-value"><span class="card-val-number">480</span><span class="card-unit">W/m²</span></div>
+          <div class="card-value"><span class="card-val-number">3.2</span><span class="card-unit">ppm</span></div>
           <div class="card-subtext">
-            <span>PAR / Global Irradiance</span>
+            <span>Simulated NH₃ concentration</span>
             <span class="quick-look-hint">Quick Look ↗</span>
           </div>
         </div>
@@ -216,9 +216,9 @@
             <div class="chart-controls">
               <button class="btn-pill metric-toggle-btn active" data-metric="temp">🌡️ Temp</button>
               <button class="btn-pill metric-toggle-btn active" data-metric="rh">💧 RH</button>
-              <button class="btn-pill metric-toggle-btn active" data-metric="dewPoint">🌫️ Dew Point</button>
-              <button class="btn-pill metric-toggle-btn" data-metric="soil">🌱 Soil</button>
-              <button class="btn-pill metric-toggle-btn" data-metric="solar">☀️ Solar</button>
+              <button class="btn-pill metric-toggle-btn active" data-metric="co2">CO₂</button>
+              <button class="btn-pill metric-toggle-btn active" data-metric="ch4">CH₄</button>
+              <button class="btn-pill metric-toggle-btn active" data-metric="nh3">NH₃</button>
             </div>
 
             <!-- Time Range Presets -->
@@ -415,13 +415,13 @@
                   <input type="checkbox" class="export-metric-check" value="rh" checked> Relative Humidity (%)
                 </label>
                 <label style="display:flex; align-items:center; gap:0.4rem;">
-                  <input type="checkbox" class="export-metric-check" value="dewPoint" checked> Dew Point (°C)
+                  <input type="checkbox" class="export-metric-check" value="co2" checked> CO₂ (ppm)
                 </label>
                 <label style="display:flex; align-items:center; gap:0.4rem;">
-                  <input type="checkbox" class="export-metric-check" value="soilMoisture" checked> Soil Moisture (%)
+                  <input type="checkbox" class="export-metric-check" value="ch4" checked> CH₄ (ppm)
                 </label>
                 <label style="display:flex; align-items:center; gap:0.4rem;">
-                  <input type="checkbox" class="export-metric-check" value="solarRad" checked> Solar Radiation (W/m²)
+                  <input type="checkbox" class="export-metric-check" value="nh3" checked> NH₃ (ppm)
                 </label>
                 <label style="display:flex; align-items:center; gap:0.4rem;">
                   <input type="checkbox" class="export-metric-check" value="battery" checked> Battery Telemetry

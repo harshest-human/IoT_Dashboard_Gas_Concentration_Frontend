@@ -19,9 +19,9 @@
       return {
         temp: { border: '#0284c7', fill: 'rgba(2, 132, 199, 0.08)', name: 'Air Temp (°C)' },
         rh: { border: '#0d9488', fill: 'rgba(13, 148, 136, 0.08)', name: 'Rel Humidity (%)' },
-        dewPoint: { border: '#6366f1', fill: 'rgba(99, 102, 241, 0.08)', name: 'Dew Point (°C)' },
-        soil: { border: '#d97706', fill: 'rgba(217, 119, 6, 0.08)', name: 'Soil Moisture (%)' },
-        solar: { border: '#eab308', fill: 'rgba(234, 179, 8, 0.08)', name: 'Solar Rad (W/m²)' },
+        co2: { border: '#6366f1', fill: 'rgba(99, 102, 241, 0.08)', name: 'CO₂ (ppm)' },
+        ch4: { border: '#d97706', fill: 'rgba(217, 119, 6, 0.08)', name: 'CH₄ (ppm)' },
+        nh3: { border: '#eab308', fill: 'rgba(234, 179, 8, 0.08)', name: 'NH₃ (ppm)' },
         battVolt: { border: '#10b981', fill: 'rgba(16, 185, 129, 0.08)', name: 'Battery (V)' },
         rssi: { border: '#8b5cf6', fill: 'rgba(139, 92, 246, 0.08)', name: 'RSSI (dBm)' },
         offline: { border: '#94a3b8', fill: 'rgba(148, 163, 184, 0.1)' }
@@ -29,7 +29,7 @@
     }
 
     // Render the Primary Multi-Parameter Time-Series Chart
-    renderMainChart(canvasId, timeSeriesData, activeMetrics = ['temp', 'rh', 'dewPoint']) {
+    renderMainChart(canvasId, timeSeriesData, activeMetrics = ['temp', 'rh', 'co2', 'ch4', 'nh3']) {
       const canvas = document.getElementById(canvasId);
       if (!canvas) return;
 
@@ -68,45 +68,45 @@
         });
       }
 
-      if (activeMetrics.includes('dewPoint')) {
+      if (activeMetrics.includes('co2')) {
         datasets.push({
-          label: 'Dew Point (°C)',
-          data: timeSeriesData.map(d => d.dewPoint),
-          borderColor: colors.dewPoint.border,
+          label: 'CO₂ (ppm)',
+          data: timeSeriesData.map(d => d.co2),
+          borderColor: colors.co2.border,
           backgroundColor: 'transparent',
           borderWidth: 1.8,
           borderDash: [5, 4],
           pointRadius: 0,
           pointHoverRadius: 5,
-          yAxisID: 'yTemp',
+          yAxisID: 'yGas',
           tension: 0.3
         });
       }
 
-      if (activeMetrics.includes('soil')) {
+      if (activeMetrics.includes('ch4')) {
         datasets.push({
-          label: 'Soil Moisture (%)',
-          data: timeSeriesData.map(d => d.soil),
-          borderColor: colors.soil.border,
-          backgroundColor: colors.soil.fill,
+          label: 'CH₄ (ppm)',
+          data: timeSeriesData.map(d => d.ch4),
+          borderColor: colors.ch4.border,
+          backgroundColor: colors.ch4.fill,
           borderWidth: 2,
           pointRadius: 0,
           pointHoverRadius: 5,
-          yAxisID: 'yRH',
+          yAxisID: 'yGas',
           tension: 0.2
         });
       }
 
-      if (activeMetrics.includes('solar')) {
+      if (activeMetrics.includes('nh3')) {
         datasets.push({
-          label: 'Solar Radiation (W/m²)',
-          data: timeSeriesData.map(d => d.solar),
-          borderColor: colors.solar.border,
-          backgroundColor: colors.solar.fill,
+          label: 'NH₃ (ppm)',
+          data: timeSeriesData.map(d => d.nh3),
+          borderColor: colors.nh3.border,
+          backgroundColor: colors.nh3.fill,
           borderWidth: 1.5,
           pointRadius: 0,
           pointHoverRadius: 5,
-          yAxisID: 'ySolar',
+          yAxisID: 'yGas',
           tension: 0.2
         });
       }
@@ -156,22 +156,22 @@
             yTemp: {
               type: 'linear',
               position: 'left',
-              title: { display: true, text: 'Temperature & Dew Point (°C)', font: { size: 11, weight: '600' } },
+              title: { display: true, text: 'Temperature (°C)', font: { size: 11, weight: '600' } },
               grid: { color: 'rgba(226, 232, 240, 0.8)' }
             },
             yRH: {
               type: 'linear',
               position: 'right',
-              title: { display: true, text: 'Humidity & Soil (%)', font: { size: 11, weight: '600' } },
+              title: { display: true, text: 'Relative Humidity (%)', font: { size: 11, weight: '600' } },
               grid: { display: false },
               min: 0,
               max: 100
             },
-            ySolar: {
+            yGas: {
               type: 'linear',
               position: 'right',
-              display: activeMetrics.includes('solar'),
-              title: { display: true, text: 'Solar (W/m²)', font: { size: 11, weight: '600' } },
+              display: activeMetrics.some(m => ['co2', 'ch4', 'nh3'].includes(m)),
+              title: { display: true, text: 'Gas concentration (ppm)', font: { size: 11, weight: '600' } },
               grid: { display: false },
               min: 0
             }
@@ -206,23 +206,23 @@
           color = colors.rh.border;
           unit = '%';
           break;
-        case 'dewPoint':
-          data = timeSeriesData.map(d => d.dewPoint);
-          label = `${node.id} - Dew Point`;
-          color = colors.dewPoint.border;
-          unit = '°C';
+        case 'co2':
+          data = timeSeriesData.map(d => d.co2);
+          label = `${node.id} - CO₂`;
+          color = colors.co2.border;
+          unit = 'ppm';
           break;
-        case 'soil':
-          data = timeSeriesData.map(d => d.soil);
-          label = `${node.id} - Soil Moisture`;
-          color = colors.soil.border;
-          unit = '%';
+        case 'ch4':
+          data = timeSeriesData.map(d => d.ch4);
+          label = `${node.id} - CH₄`;
+          color = colors.ch4.border;
+          unit = 'ppm';
           break;
-        case 'solar':
-          data = timeSeriesData.map(d => d.solar);
-          label = `${node.id} - Solar Radiation`;
-          color = colors.solar.border;
-          unit = 'W/m²';
+        case 'nh3':
+          data = timeSeriesData.map(d => d.nh3);
+          label = `${node.id} - NH₃`;
+          color = colors.nh3.border;
+          unit = 'ppm';
           break;
         case 'battery':
           data = timeSeriesData.map(d => d.battVolt);
@@ -379,7 +379,7 @@
 
         if (metricKey === 'temp') { values = series.map(d => d.temp); unit = '°C'; }
         else if (metricKey === 'rh') { values = series.map(d => d.rh); unit = '%'; }
-        else if (metricKey === 'soil') { values = series.map(d => d.soil); unit = '%'; }
+        else if (['co2', 'ch4', 'nh3'].includes(metricKey)) { values = series.map(d => d[metricKey]); unit = 'ppm'; }
         else if (metricKey === 'battery') { values = series.map(d => d.battVolt); unit = 'V'; }
 
         datasets.push({
