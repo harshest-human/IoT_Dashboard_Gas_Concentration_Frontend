@@ -1,8 +1,8 @@
 # Adaptive AgroTech Cloud – Next-Gen Research & Diagnostics Frontend
 
-> 🔒 **CONFIDENTIAL & PROPRIETARY – FOR ADAPTIVE AGROTECH COLLABORATORS ONLY**  
-> *This repository is maintained for internal development, customization, and user experience evaluation of the frontend GUI for **Adaptive AgroTech Company** in collaboration with research partners (ATB Potsdam).*  
-> **Note:** This repository is private and intended solely for authorized team members and invited collaborators. It should **not** be made public.
+Live demo: https://harshest-human.github.io/IoT_Dashboard_Gas_Concentration_Frontend/
+
+This public repository contains a simulated gas-monitoring dashboard. GitHub Pages deploys the dashboard automatically when changes are pushed to `main`.
 
 ---
 
